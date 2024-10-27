@@ -1,5 +1,5 @@
 import {generatePhotos} from './photo.js';
 
 const photos = generatePhotos();
-photos;
+console.log(photos);
 

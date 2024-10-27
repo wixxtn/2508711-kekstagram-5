@@ -12,7 +12,7 @@ const createPhoto = (id) => ({
 const generatePhotos = () => {
   const photos = [];
   for (let i = 1; i <= PHOTO_DESCRIPTION_COUNTER; i++){
-    photos.push(createPhoto(i))
+    photos.push(createPhoto(i));
   }
   return photos;
 };

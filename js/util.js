@@ -12,13 +12,13 @@ export {getRandomInteger, getRandomArrayElement};
 
 function checkStringLength(len, maxLength){
   return len >= maxLength;
-};
+}
 
 function isPalindrome (str){
   const cleanedStr = str.replaceAll(' ', '').toLowerCase;
   const reversedStr = cleanedStr.split('').reverse().join('');
   return cleanedStr === reversedStr;
-};
+}
 
 function digitsToInteger(input) {
   const str = input.toString();
@@ -31,7 +31,7 @@ function digitsToInteger(input) {
   }
   const numberResult = parseInt(result, 10);
   return result.length > 0 ? numberResult : NaN;
-};
+}
 
 export {checkStringLength, isPalindrome, digitsToInteger};
 

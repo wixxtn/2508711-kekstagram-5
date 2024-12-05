@@ -1,5 +1,4 @@
 export const renderThumbnails = (photos) => {
-  console.log(photos);
   const template = document.querySelector('#picture').content.querySelector('.picture');
   const container = document.querySelector('.pictures');
 

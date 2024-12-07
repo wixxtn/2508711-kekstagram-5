@@ -192,6 +192,8 @@ const effects = {
   },
 };
 
+let currentEffect = 'none';
+
 const updateSlider = (effect) => {
   noUiSlider.create(effectLevelSlider, {
     start: effect.max,

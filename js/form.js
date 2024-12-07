@@ -34,9 +34,7 @@ const validateHashtags = (value) => {
   return hashtags.length === uniqueHashtags.size;
 };
 
-const validateComment = (value) => {
-  return value.length <= 140;
-};
+const validateComment = (value) => value.length <= 140;
 
 pristine.addValidator(
   form.querySelector('.text__hashtags'),
@@ -50,6 +48,13 @@ pristine.addValidator(
   'Комментарий не может быть длиннее 140 символов'
 );
 
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape' && !document.activeElement.closest('.text__hashtags, .text__description')) {
+    evt.preventDefault();
+    closeUploadForm();
+  }
+};
+
 const openUploadForm = () => {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -62,13 +67,6 @@ const closeUploadForm = () => {
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
-};
-
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && !document.activeElement.closest('.text__hashtags, .text__description')) {
-    evt.preventDefault();
-    closeUploadForm();
-  }
 };
 
 uploadCancel.addEventListener('click', () => {

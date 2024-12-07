@@ -192,8 +192,6 @@ const effects = {
   },
 };
 
-let currentEffect = 'none';
-
 const updateSlider = (effect) => {
   noUiSlider.create(effectLevelSlider, {
     start: effect.max,
@@ -221,7 +219,6 @@ const resetSlider = () => {
 
 effectsList.addEventListener('change', (evt) => {
   const effectName = evt.target.value;
-  currentEffect = effectName;
 
   if (effectName === 'none') {
     resetSlider();

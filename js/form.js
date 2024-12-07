@@ -17,6 +17,20 @@ const pristine = new Pristine(form, {
   errorTextClass: 'img-upload__error'
 });
 
+function closeUploadForm() {
+  form.reset();
+  pristine.reset();
+  uploadOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onDocumentKeydown);
+}
+
+function onDocumentKeydown(evt) {
+  if (evt.key === 'Escape' && !document.activeElement.closest('.text__hashtags, .text__description')) {
+    evt.preventDefault();
+    closeUploadForm();
+  }
+}
 const validateHashtags = (value) => {
   const hashtags = value.trim().toLowerCase().split(' ');
   const uniqueHashtags = new Set(hashtags);
@@ -48,26 +62,11 @@ pristine.addValidator(
   'Комментарий не может быть длиннее 140 символов'
 );
 
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && !document.activeElement.closest('.text__hashtags, .text__description')) {
-    evt.preventDefault();
-    closeUploadForm();
-  }
-};
-
-const openUploadForm = () => {
+function openUploadForm() {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
-};
-
-const closeUploadForm = () => {
-  form.reset();
-  pristine.reset();
-  uploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-};
+}
 
 uploadCancel.addEventListener('click', () => {
   closeUploadForm();

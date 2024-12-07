@@ -1,28 +1,31 @@
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-const showMessage = (template) => {
+export function showSuccessMessage() {
+  showMessage(successTemplate);
+}
+
+export function showErrorMessage() {
+  showMessage(errorTemplate);
+}
+
+function showMessage(template) {
   const messageElement = template.cloneNode(true);
   document.body.appendChild(messageElement);
 
-  const onMessageKeydown = (evt) => {
+  document.addEventListener('keydown', onMessageKeydown);
+
+  messageElement.querySelector('.success__button, .error__button').addEventListener('click', closeMessage);
+
+  function onMessageKeydown(evt) {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       closeMessage();
     }
-  };
+  }
 
-  const closeMessage = () => {
+  function closeMessage() {
     messageElement.remove();
     document.removeEventListener('keydown', onMessageKeydown);
-  };
-
-  messageElement.querySelector('.success__button, .error__button').addEventListener('click', () => {
-    closeMessage();
-  });
-
-  document.addEventListener('keydown', onMessageKeydown);
-};
-
-export const showSuccessMessage = () => showMessage(successTemplate);
-export const showErrorMessage = () => showMessage(errorTemplate);
+  }
+}

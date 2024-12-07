@@ -1,3 +1,5 @@
+import { showSuccessMessage, showErrorMessage } from './messages.js';
+
 const Pristine = window.Pristine;
 
 const form = document.querySelector('.img-upload__form');
@@ -189,8 +191,6 @@ const effects = {
     filter: 'brightness',
   },
 };
-
-let currentEffect = 'none';
 
 const updateSlider = (effect) => {
   noUiSlider.create(effectLevelSlider, {

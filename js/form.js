@@ -1,3 +1,4 @@
+import { sendData } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
 
 const Pristine = window.Pristine;
@@ -15,7 +16,7 @@ const pristine = new Pristine(form, {
   successClass: 'img-upload__field-wrapper--valid',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
-  errorTextClass: 'img-upload__error'
+  errorTextClass: 'img-upload__error',
 });
 
 function closeUploadForm() {
@@ -24,6 +25,7 @@ function closeUploadForm() {
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
+  resetForm();
 }
 
 function onDocumentKeydown(evt) {
@@ -55,13 +57,13 @@ const validateComment = (value) => value.length <= 140;
 pristine.addValidator(
   form.querySelector('.text__hashtags'),
   validateHashtags,
-  'Неверный формат хэш-тегов'
+  'Неверный формат хэш-тегов',
 );
 
 pristine.addValidator(
   form.querySelector('.text__description'),
   validateComment,
-  'Комментарий не может быть длиннее 140 символов'
+  'Комментарий не может быть длиннее 140 символов',
 );
 
 function openUploadForm() {
@@ -87,26 +89,18 @@ form.addEventListener('submit', async (evt) => {
 
     try {
       const formData = new FormData(form);
-      const response = await fetch('https://29.javascript.htmlacademy.pro/kekstagram', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        closeUploadForm();
-        showSuccessMessage();
-      } else {
-        showErrorMessage();
-      }
+      await sendData(formData);
+      closeUploadForm();
+      showSuccessMessage();
     } catch (error) {
-      showErrorMessage();
+      showErrorMessage(error.message);
     } finally {
       submitButton.disabled = false;
     }
   }
 });
 
-// Редактирование масштаба изображения
+
 const scaleControlSmaller = document.querySelector('.scale__control--smaller');
 const scaleControlBigger = document.querySelector('.scale__control--bigger');
 const scaleControlValue = document.querySelector('.scale__control--value');
@@ -138,10 +132,8 @@ scaleControlBigger.addEventListener('click', () => {
   }
 });
 
-// Устанавливаем начальный масштаб
 updateScale();
 
-// Наложение эффектов на изображение с использованием noUiSlider
 const effectLevelSlider = document.querySelector('.effect-level__slider');
 const effectLevelValue = document.querySelector('.effect-level__value');
 const effectsList = document.querySelector('.effects__list');
@@ -193,6 +185,10 @@ const effects = {
 };
 
 const updateSlider = (effect) => {
+  if (effectLevelSlider.noUiSlider) {
+    effectLevelSlider.noUiSlider.destroy();
+  }
+
   noUiSlider.create(effectLevelSlider, {
     start: effect.max,
     range: {
@@ -230,6 +226,12 @@ effectsList.addEventListener('change', (evt) => {
   }
 });
 
-// Инициализация слайдера для эффекта "none"
 updateSlider(effects.none);
 effectLevelContainer.classList.add('hidden');
+
+function resetForm() {
+  currentScale = DEFAULT_SCALE;
+  updateScale();
+  resetSlider();
+  uploadInput.value = '';
+}

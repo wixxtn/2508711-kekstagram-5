@@ -1,6 +1,21 @@
-import {generatePhotos} from './photo.js';
-import {renderThumbnails} from './render-thumbnails.js';
-//eslint-disable-next-line no-unused-vars
-const photos = generatePhotos();
+import { getData } from './api.js';
+import { renderThumbnails } from './render-thumbnails.js';
+import { showErrorMessage } from './messages.js';
 
-renderThumbnails(photos);
+let isDataLoaded = false;
+
+const loadPhotos = async () => {
+  if (isDataLoaded) {
+    return;
+  }
+
+  try {
+    const photos = await getData();
+    renderThumbnails(photos);
+    isDataLoaded = true;
+  } catch (error) {
+    showErrorMessage('Не удалось загрузить фотографии. Попробуйте позже.');
+  }
+};
+
+loadPhotos();

@@ -5,8 +5,10 @@ export function showSuccessMessage() {
   showMessage(successTemplate);
 }
 
-export function showErrorMessage() {
-  showMessage(errorTemplate);
+export function showErrorMessage(message) {
+  const errorElement = errorTemplate.cloneNode(true);
+  errorElement.querySelector('.error__title').textContent = message;
+  showMessage(errorElement);
 }
 
 function showMessage(template) {

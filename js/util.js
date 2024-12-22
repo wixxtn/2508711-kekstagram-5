@@ -8,14 +8,14 @@ const getRandomInteger = (min, max) => {
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-export {getRandomInteger, getRandomArrayElement};
+export { getRandomInteger, getRandomArrayElement };
 
-function checkStringLength(len, maxLength){
+function checkStringLength(len, maxLength) {
   return len >= maxLength;
 }
 
-function isPalindrome (str){
-  const cleanedStr = str.replaceAll(' ', '').toLowerCase;
+function isPalindrome(str) {
+  const cleanedStr = str.replaceAll(' ', '').toLowerCase();
   const reversedStr = cleanedStr.split('').reverse().join('');
   return cleanedStr === reversedStr;
 }
@@ -33,5 +33,12 @@ function digitsToInteger(input) {
   return result.length > 0 ? numberResult : NaN;
 }
 
-export {checkStringLength, isPalindrome, digitsToInteger};
+const debounce = (callback, timeoutDelay = 500) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
 
+export { checkStringLength, isPalindrome, digitsToInteger, debounce };

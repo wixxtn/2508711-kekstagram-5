@@ -45,7 +45,9 @@ const filters = {
 
 const updateThumbnails = debounce((filterId) => {
   const container = document.querySelector('.pictures');
-  container.innerHTML = '';
+  const thumbnails = container.querySelectorAll('.picture');
+  thumbnails.forEach((thumbnail) => thumbnail.remove());
+
   const filteredPhotos = filters[filterId]();
   renderThumbnails(filteredPhotos);
 }, 500);

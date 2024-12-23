@@ -9,6 +9,7 @@ const uploadOverlay = document.querySelector('.img-upload__overlay');
 const uploadCancel = document.querySelector('#upload-cancel');
 const body = document.querySelector('body');
 const submitButton = document.querySelector('#upload-submit');
+const imgUploadPreview = document.querySelector('.img-upload__preview img');
 
 const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
@@ -77,7 +78,18 @@ uploadCancel.addEventListener('click', () => {
 });
 
 uploadInput.addEventListener('change', () => {
-  openUploadForm();
+  const file = uploadInput.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      imgUploadPreview.src = evt.target.result;
+      openUploadForm();
+    };
+
+    reader.readAsDataURL(file);
+  }
 });
 
 form.addEventListener('submit', async (evt) => {
@@ -100,11 +112,9 @@ form.addEventListener('submit', async (evt) => {
   }
 });
 
-
 const scaleControlSmaller = document.querySelector('.scale__control--smaller');
 const scaleControlBigger = document.querySelector('.scale__control--bigger');
 const scaleControlValue = document.querySelector('.scale__control--value');
-const imgUploadPreview = document.querySelector('.img-upload__preview img');
 
 const SCALE_STEP = 25;
 const MIN_SCALE = 25;
@@ -234,4 +244,5 @@ function resetForm() {
   updateScale();
   resetSlider();
   uploadInput.value = '';
+  imgUploadPreview.src = 'img/upload-default-image.jpg';
 }

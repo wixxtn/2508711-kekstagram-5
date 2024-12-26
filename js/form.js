@@ -24,9 +24,14 @@ function closeUploadForm() {
   form.reset();
   pristine.reset();
   uploadOverlay.classList.add('hidden');
+  uploadOverlay.style.display = 'none';
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
   resetForm();
+
+  setTimeout(() => {
+    uploadOverlay.style.display = '';
+  }, 100);
 }
 
 function onDocumentKeydown(evt) {
@@ -37,8 +42,15 @@ function onDocumentKeydown(evt) {
 }
 
 const validateHashtags = (value) => {
-  const hashtags = value.trim().toLowerCase().split(' ');
-  const uniqueHashtags = new Set(hashtags);
+  const hashtags = value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (hashtags.length === 0) {
+    return true;
+  }
 
   if (hashtags.length > 5) {
     return false;
@@ -50,6 +62,7 @@ const validateHashtags = (value) => {
     }
   }
 
+  const uniqueHashtags = new Set(hashtags);
   return hashtags.length === uniqueHashtags.size;
 };
 
@@ -67,8 +80,15 @@ pristine.addValidator(
   'Комментарий не может быть длиннее 140 символов',
 );
 
+const hashtagsInput = form.querySelector('.text__hashtags');
+hashtagsInput.addEventListener('input', () => {
+  pristine.validate(hashtagsInput);
+});
+
 function openUploadForm() {
   uploadOverlay.classList.remove('hidden');
+  uploadOverlay.style.opacity = '1';
+  uploadOverlay.style.pointerEvents = 'auto';
   body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
 }
@@ -81,34 +101,15 @@ uploadInput.addEventListener('change', () => {
   const file = uploadInput.files[0];
 
   if (file) {
-    const reader = new FileReader();
+    const blobURL = URL.createObjectURL(file);
+    imgUploadPreview.src = blobURL;
 
-    reader.onload = (evt) => {
-      imgUploadPreview.src = evt.target.result;
-      openUploadForm();
-    };
+    const effectPreviews = document.querySelectorAll('.effects__preview');
+    effectPreviews.forEach((preview) => {
+      preview.style.backgroundImage = `url(${blobURL})`;
+    });
 
-    reader.readAsDataURL(file);
-  }
-});
-
-form.addEventListener('submit', async (evt) => {
-  evt.preventDefault();
-  const isValid = pristine.validate();
-
-  if (isValid) {
-    submitButton.disabled = true;
-
-    try {
-      const formData = new FormData(form);
-      await sendData(formData);
-      closeUploadForm();
-      showSuccessMessage();
-    } catch (error) {
-      showErrorMessage(error.message);
-    } finally {
-      submitButton.disabled = false;
-    }
+    openUploadForm();
   }
 });
 
@@ -122,6 +123,38 @@ const MAX_SCALE = 100;
 const DEFAULT_SCALE = 100;
 
 let currentScale = DEFAULT_SCALE;
+
+form.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+
+  const isValid = pristine.validate();
+
+  if (isValid) {
+    submitButton.disabled = true;
+
+    try {
+      const formData = new FormData(form);
+      formData.set('scale', `${currentScale}%`);
+
+      const selectedEffect = document.querySelector('.effects__radio:checked').value;
+      formData.set('effect', selectedEffect);
+
+      const comment = form.querySelector('.text__description').value;
+      const hashtags = form.querySelector('.text__hashtags').value;
+      formData.set('description', comment);
+      formData.set('hashtags', hashtags);
+
+      await sendData(formData);
+
+      closeUploadForm();
+      showSuccessMessage();
+    } catch (error) {
+      showErrorMessage(error.message);
+    } finally {
+      submitButton.disabled = false;
+    }
+  }
+});
 
 const updateScale = () => {
   scaleControlValue.value = `${currentScale}%`;
@@ -210,7 +243,12 @@ const updateSlider = (effect) => {
   });
 
   effectLevelSlider.noUiSlider.on('update', (values, handle) => {
-    effectLevelValue.value = values[handle];
+    const value = parseFloat(values[handle]);
+    if (value % 1 === 0) {
+      effectLevelValue.value = value.toFixed(0);
+    } else {
+      effectLevelValue.value = value.toFixed(1);
+    }
     imgUploadPreview.style.filter = `${effect.filter}(${values[handle]}${effect.unit})`;
   });
 };
